@@ -5,18 +5,18 @@ import json
 with open('config.json') as config:
     config = json.load(config)
 
-bot = commands.AutoShardedBot(command_prefix=config['prefix'], description = """An example bot for bb api""")
+bot = commands.AutoShardedBot(command_prefix=config["prefix"], description="An example bot for bb api")
 bot.config = config
 
-for cog in os.listdir('cogs'):
-    if not cog.endswith('.py'):
+for cog in os.listdir("cogs"):
+    if not cog.endswith(".py"):
         continue
     try:
-        bot.load_extension(f'cogs.{cog[:-3]}')
+        bot.load_extension(f"cogs.{cog[:-3]}")
     except SyntaxError as es:
-        print(f'Failed to load cog {cog} becayse of a syntaxerror.')
+        print(f"Failed to load {cog} because of a syntaxerror.")
     except ImportError as ei:
-        print(f'Failed to load {cog} because of a importerror.')
+        print(f"Failed to load {cog} because of an importerror.")
 
     @bot.event
     async def on_message(ctx):
@@ -27,9 +27,9 @@ for cog in os.listdir('cogs'):
 
     @bot.event
     async def on_ready():
-        print('Login successful.')
-        print(f'Logged in as: {bot.user.name}')
-        print(f'Bot ID: {bot.user.id}')
-        print(f'Server count: {len(bot.guilds)}')
+        print("Login successful.")
+        print(f"Logged in as: {bot.user.name}")
+        print(f"Bot ID: {bot.user.id}")
+        print(f"Server count: {len(bot.guilds)}")
 
-bot.run(config['token'])
+bot.run(config["token"])
