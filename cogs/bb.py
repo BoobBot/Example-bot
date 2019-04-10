@@ -1,65 +1,58 @@
-import discord
 from discord.ext import commands
+from discord.ext.commands import Context
 import aiohttp
-import json
-
 
 
 class Bb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.session = aiohttp.ClientSession()
-        self.color = 0x8A2BE2
-
 
     @commands.command()
+    @commands.is_nsfw()  # Check to ensure the channel is marked NSFW.
     async def boobs(self, ctx):
-        """Boobs"""
-        ch = ctx.channel
-        if ch.is_nsfw():
-            page = await self.session.get("https://boob.bot/api/v2/img/boobs", headers={"key": self.bot.config["key"]})
-            resp = await page.json()
-            em = discord.Embed(colour=self.color)
-            em.set_image(url=resp["url"])
-            await ctx.send(embed=em)
-        else:
-            await ctx.send("This can only be ran in a NSFW channel.")
-        
+        """ Pictures of boobs. """
+        await self.send_bb_image('boobs')
+        # Sends an image of boobs to the current channel.
 
     @commands.command()
+    @commands.is_nsfw()  # Check to ensure the channel is marked NSFW.
     async def ass(self, ctx):
-        """Booty"""
-        ch = ctx.channel
-        if ch.is_nsfw():
-            page = await self.session.get("https://boob.bot/api/v2/img/ass", headers={"key": self.bot.config["key"]})
-            resp = await page.json()
-            em = discord.Embed(colour=self.color)
-            em.set_image(url=resp["url"])
-            await ctx.send(embed=em)
-        else:
-            await ctx.send("This can only be ran in a NSFW channel.")
+        """ Pictures of ass. """
+        await self.send_bb_image(ctx, 'ass')
+        # Sends an ass image to the current channel.
 
     @commands.command()
     async def cat(self, ctx):
-        """Cats"""
-        page = await self.session.get("https://nekos.life/api/v2/img/meow")
-        resp = await page.json()
-        em = discord.Embed(colour=self.color)
-        em.set_image(url=resp["url"])
-        await ctx.send(embed=em)
+        """ Cats. """
+        await self.send_neko_image(ctx, 'meow')
+        # Sends an image from the "meow" category to the current channel
 
     @commands.command()
+    @commands.is_nsfw()  # Check to ensure the channel is marked NSFW.
     async def lewdn(self, ctx):
-        """Lewd nekos"""
-        ch = ctx.channel
-        if ch.is_nsfw():
-            page = await self.session.get("https://nekos.life/api/v2/img/lewd")
-            resp = await page.json()
-            em = discord.Embed(colour=self.color)
-            em.set_image(url=resp["url"])
-            await ctx.send(embed=em)
-        else:
-            await ctx.send("This can only be run in a NSFW channel.")
+        """ Lewd nekos. """
+        await self.send_neko_image(ctx, 'lewd')
+        # Sends an image from the "lewd" category to the current channel
+
+    async def send_bb_image(self, ctx: Context, category: str):
+        async with self.session.get(f'https://boob.bot/api/v2/img/{category}',  # "async with" allows the response to be closed automatically
+                                    headers={'key': self.bot.config['key']}) as resp:  # once this block is exited, to ensure resources are freed.
+            if resp.status != 200:
+                await ctx.send('The API responded with a non-200 code.')
+
+            json = await resp.json()  # Converts the response body into a JSON object.
+            await ctx.send(json['url'])
+
+    async def send_neko_image(self, ctx: Context, category: str):
+        async with self.session.get(f'https://nekos.life/api/v2/img/{category}') as resp:
+            # "async with" allows the response to be closed automatically upon exiting this block
+            # which ensures resources are freed.
+            if resp.status != 200:
+                await ctx.send('The API responded with a non-200 code.')
+
+            json = await resp.json()  # Converts the response body into a JSON object.
+            await ctx.send(json['url'])
 
 
 def setup(bot):
