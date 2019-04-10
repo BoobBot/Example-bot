@@ -8,13 +8,13 @@ class Main(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-        """ Gets the bots invite link """
-        await ctx.send(f'Invite me using this link <{self.bot.invite_url}>')
+        """Gets the bots invite link"""
+        await ctx.send(f"Invite me using this link <{self.bot.invite_url}>")
 
     @commands.command()
     async def ping(self, ctx):
-        """ Checks if the bot is working. """
-        await ctx.send('Pong!')
+        """Checks if the bot is working."""
+        await ctx.send("Pong!")
 
 
 def setup(bot):
