@@ -13,45 +13,53 @@ class Bb(commands.Cog):
     async def boobs(self, ctx):
         """ Pictures of boobs. """
         await self.send_bb_image('boobs')
-        # Sends an image of boobs to the current channel.
 
     @commands.command()
     @commands.is_nsfw()  # Check to ensure the channel is marked NSFW.
     async def ass(self, ctx):
         """ Pictures of ass. """
         await self.send_bb_image(ctx, 'ass')
-        # Sends an ass image to the current channel.
 
     @commands.command()
     async def cat(self, ctx):
         """ Cats. """
         await self.send_neko_image(ctx, 'meow')
-        # Sends an image from the "meow" category to the current channel
 
     @commands.command()
     @commands.is_nsfw()  # Check to ensure the channel is marked NSFW.
     async def lewdn(self, ctx):
         """ Lewd nekos. """
         await self.send_neko_image(ctx, 'lewd')
-        # Sends an image from the "lewd" category to the current channel
 
     async def send_bb_image(self, ctx: Context, category: str):
-        async with self.session.get(f'https://boob.bot/api/v2/img/{category}',  # "async with" allows the response to be closed automatically
-                                    headers={'key': self.bot.config['key']}) as resp:  # once this block is exited, to ensure resources are freed.
+        """
+        Makes a request to BoobBot's API for an image in the given category.
+        If the request is successful, the URL is extracted from the response JSON
+        and sent to `ctx.channel`.
+        """
+        async with self.session.get(f'https://boob.bot/api/v2/img/{category}',
+                                    headers={'key': self.bot.config['key']}) as resp:
+            # An "async with" block allows "resp" to be automatically closed once this block is exited.
+            # This means that resources, such as threads and memory, can be freed up for later re-use.
             if resp.status != 200:
                 await ctx.send('The API responded with a non-200 code.')
 
-            json = await resp.json()  # Converts the response body into a JSON object.
+            json = await resp.json()
             await ctx.send(json['url'])
 
     async def send_neko_image(self, ctx: Context, category: str):
+        """
+        Makes a request to neko.life's API for an image in the given category.
+        If the request is successful, the URL is extracted from the response JSON
+        and sent to `ctx.channel`.
+        """
         async with self.session.get(f'https://nekos.life/api/v2/img/{category}') as resp:
-            # "async with" allows the response to be closed automatically upon exiting this block
-            # which ensures resources are freed.
+            # An "async with" block allows "resp" to be automatically closed once this block is exited.
+            # This means that resources, such as threads and memory, can be freed up for later re-use.
             if resp.status != 200:
                 await ctx.send('The API responded with a non-200 code.')
 
-            json = await resp.json()  # Converts the response body into a JSON object.
+            json = await resp.json()
             await ctx.send(json['url'])
 
 
